@@ -39,7 +39,7 @@ render() {
     const body = JSON.stringify({
       name: "gkyclpn",
       email: "gokayculpan@hotmail.com",
-      password: "**********"
+      password: "**********",
     })
 
     const headers = {
@@ -56,6 +56,7 @@ render() {
     try {
       const fetchResponse = await fetch(`http://localhost:5000/helloworld`, settings);
       const data = await fetchResponse.json();
+      console.log(data)
       return data; // your response data
     } catch (e) {
       console.log(e)
