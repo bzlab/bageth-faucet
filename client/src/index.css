@@ -496,11 +496,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: 83.333333%;
 }
 
-.flex-1 {
-  -webkit-flex: 1 1 0%;
-          flex: 1 1 0%;
-}
-
 .flex-col {
   -webkit-flex-direction: column;
           flex-direction: column;

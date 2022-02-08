@@ -69,7 +69,9 @@ class App extends Component {
 
 
 render() {
-    window.ethereum.on('accountsChanged', this.accountChangedHandler)
+    if (typeof window.ethereum !== 'undefined') {
+        window.ethereum.on('accountsChanged', this.accountChangedHandler)
+    }
     return (
         <div className="flex flex-col h-screen gap-y-8 items-center">
             <div className="bg-gray-600 w-full h-1/6 flex justify-center shadow-md"><img className="p-8" src={bzlablogo} /></div>
