@@ -1,0 +1,22 @@
+services:
+  frontend:
+    image: bageth-faucet-frontend
+    ports:
+      - 80:80
+    networks:
+      faucet:
+        ipv4_address: 192.168.40.1
+
+  backend:
+    image: bageth-faucet-frontend
+    networks:
+      faucet:
+        ipv4_address: 192.168.40.2
+
+
+networks:
+  faucet:                    
+    driver: bridge             
+    ipam:                      
+      config:                  
+        - subnet: 192.168.40.0/24
