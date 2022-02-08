@@ -1,76 +1,89 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import Web3 from 'web3';
-import contractABI from './contract-abi' // cirkin ama ne yapalim
+import contractABI from './contract-abi';
+import bzlablogo from './img/bzlablogo.png';
+import {ethers} from 'ethers';
+
+const web3 = new Web3(Web3.givenProvider || "https://eth.bag.org.tr/rpc");
 
 class App extends Component {
 
-state = {
-    data: null
-  };
+    constructor(props) {
+        super(props);
+        this.state = {
+            address: null,
+            balance: null
+        };
+    }
 
   componentDidMount() {
-    this.callBackendAPI()
-      .then(res => this.setState({ data: res.express }))
-      .catch(err => console.log(err));
+    this.click();
   }
-    // fetching the GET route from the Express server which matches the GET route from server.js
-  callBackendAPI = async () => {
-    const response = await fetch('/express_backend');
-    const body = await response.json();
 
-    if (response.status !== 200) {
-      throw Error(body.message) 
+
+  click = async () => {
+      if (typeof window.ethereum !== 'undefined') {
+          console.log("Connecting to Metamask Account...")
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+              .then(res => {this.accountChangedHandler(res[0])});
+      }else{
+          console.log("Install MetaMask Wallet");
+      }
+
+  }
+
+  accountChangedHandler = async (newAccount) => {
+      this.setState({address: newAccount});
+      this.checkBalance(newAccount.toString());
+  }
+
+  checkBalance = async (address) => {
+      window.ethereum.request({method: 'eth_getBalance', params: [address, 'latest']})
+          .then(balance => this.setState({balance: ethers.utils.formatEther(balance)}))
+  }
+    sendMoney = async () => {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const account = Web3.utils.toChecksumAddress(accounts[0]);
+        const body = JSON.stringify({
+            address: account,
+            contractAbi: contractABI.contractABI,
+        })
+        const headers = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }
+        const settings = {
+            method: 'POST',
+            headers,
+            body
+        };
+        const response = await fetch('/send_money', settings);
+        const result = await response.json();
+        if (response.status !== 200) {
+            throw Error(body.message)
+        }
+        this.checkBalance(account.toString());
+        return result;
     }
-    return body;
-  };
-
 
 
 
 render() {
-  let web3 = new Web3(Web3.givenProvider || "https://eth.bag.org.tr/rpc");
-  if (typeof window.ethereum !== 'undefined') {
-    console.log('MetaMask is installed!');
-  }
-  const contractAddress = ethereum.selectedAddress;
-  const contract = new web3.eth.Contract(contractABI.contractABI, contractAddress);
-
-  const click = async () => {
-    const body = JSON.stringify({
-      name: "gkyclpn",
-      email: "gokayculpan@hotmail.com",
-      password: "**********",
-    })
-
-    const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    }
-
-    const settings = {
-      method: 'POST',
-      headers,
-      body
-    };
-
-    try {
-      const fetchResponse = await fetch(`http://localhost:5000/helloworld`, settings);
-      const data = await fetchResponse.json();
-      console.log(data)
-      return data; // your response data
-    } catch (e) {
-      console.log(e)
-      return e; // handle your error here
-    }
-
-  }
-
-  return (
-        <div>
-          <p>{this.state.data}</p>
-          <button className="" onClick={() => ethereum.request({ method: 'eth_requestAccounts' })}>Connect MetaMask</button>
-          {ethereum.selectedAddress ? (<span>{ethereum.selectedAddress}</span>) : null}
-            <button onClick={click}>Send Data To Backend</button>
+    window.ethereum.on('accountsChanged', this.accountChangedHandler)
+    return (
+        <div className="flex flex-col h-screen gap-y-8 items-center">
+            <div className="bg-gray-600 w-full h-1/6 flex justify-center shadow-md"><img className="p-8" src={bzlablogo} /></div>
+            <div className=" w-5/6 p-16 h-4/6 rounded-lg shadow-md bg-gray-200 flex flex-col text-lg">
+                {ethereum.selectedAddress ? <div className="flex justify-center text-center bg-gray-600 rounded-xl py-4 text-gray-100 shadow-md"><h2 className=""><b>TÜBİTAK Ethereum Havuzuna</b> Hoş Geldiniz! <br /> Aşağıdaki buton sayesinde hesabınıza <b>0.1 <i>ETH</i></b> gönderebilirsiniz. </h2></div> : (<div className="h-screen flex flex-col items-center justify-center gap-y-4"><span>Hoş Geldiniz! Aşağıdaki butonu kullanarak MetaMask Cüzdanınızı bağlayabilirsiniz.</span><button className="bg-orange-400 text-white font-semibold p-2 px-4 rounded-lg shadow-md hover:bg-orange-500" onClick={this.click}>MetaMask'a Bağlan</button></div>)}
+                <div className="flex flex-col h-full items-center justify-center gap-y-3">
+              <hr />
+                {ethereum.selectedAddress ? (<span><b>Cüzdan Adresi:</b> {this.state.address}</span>) : null}
+              <hr />
+                {ethereum.selectedAddress ? (<span><b>Bakiye:</b> {this.state.balance} <i>ETH</i></span>) : null}
+              <hr />
+              {ethereum.selectedAddress ? (<button className="bg-green-400 text-white font-semibold p-2 px-4 rounded-lg shadow-md hover:bg-green-500" onClick={this.sendMoney}>ETH Aktar!</button>) : null}
+                </div>
+            </div>
         </div>
     );
   }

@@ -1,0 +1,46 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add ethers
+
+PATH: 
+  C:\Users\Gökay\Desktop\demoreactapp-main\node_modules\.bin;C:\Python39\Scripts\;C:\Python39\;C:\Python27\;C:\Python27\Scripts;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files\dotnet\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;D:\Program Files\Git\cmd;C:\Program Files\Amazon\AWSCLIV2\;C:\Users\Gökay\AppData\Roaming\Python\Python37\Scripts;C:\Program Files\PuTTY\;C:\ProgramData\chocolatey\bin;C:\Program Files\Java\jdk1.8.0_211\bin;C:\Program Files (x86)\Yarn\bin\;C:\Program Files\gradle-2.8\bin;C:\Program Files\nodejs\;C:\Program Files (x86)\Brackets\command;C:\Program Files\swipl\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Users\Gökay\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files\JetBrains\PyCharm Community Edition 2020.2.1\bin;;D:\Program Files\heroku\bin;C:\Users\Gökay\AppData\Roaming\Python\Python37\Scripts;C:\Users\Gökay\AppData\Local\Yarn\bin;C:\Users\Gokay\AppData\Roaming\npm;;C:\Program Files\JetBrains\WebStorm 2020.2.3\bin;;C:\Program Files\JetBrains\DataGrip 2020.3\bin;
+
+Yarn version: 
+  1.22.5
+
+Node version: 
+  14.15.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'C:\Users\Gökay\Desktop\demoreactapp-main\node_modules\bufferutil\prebuilds\win32-x64\node.napi.node'
+
+npm manifest: 
+  {
+    "name": "demoreactapp",
+    "version": "1.0.0",
+    "description": "React App",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "\\"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "body-parser": "^1.19.1",
+      "express": "^4.17.1",
+      "react-client-session": "0.0.7",
+      "web3": "^1.6.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

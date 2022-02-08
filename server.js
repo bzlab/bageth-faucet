@@ -2,8 +2,9 @@ const express = require('express'); //Line 1
 const Web3 = require('web3');
 const app = express(); //Line 2
 const port = process.env.PORT || 5000; //Line 3
-var bodyParser = require('body-parser')
+const money = '0.1';
 
+var bodyParser = require('body-parser')
 
 // create application/json parser
 var jsonParser = bodyParser.json()
@@ -20,14 +21,42 @@ app.use(function(req, res, next) {
   next();
 });
 
-// create a GET route
-app.get('/express_backend', (req, res) => { //Line 9
-  res.send({ express: 'YOUR EXPRESS BACKEND IS CONNECTED TO REACT' }); //Line 10
-}); //Line 11
 
+app.post('/send_money', jsonParser, function (req, res) {
+    let web3 = new Web3(Web3.givenProvider || "https://eth.bag.org.tr/rpc");
+    const toAddress = req.body.address;
+    const contractABI = req.body.contractAbi;
+    const contract = new web3.eth.Contract(contractABI, toAddress);
+    const senderAddress = '0x15C2c14B416b2f5531CbCcdE364c048cf3F0f1dE';
+    const privKey = '358547c8efd5381ad50841d73d5449d64a0c9f795070f8c54c34cbdf4c94969d';
+    const nonce = web3.utils.toHex(web3.eth.getTransactionCount(senderAddress, 'pending'));
 
-
-app.post('/helloworld', jsonParser, function (req, res) {
-  res.send({ post_request: 'helloworld' });
-  console.log(req.body.name)
+    const tx = {
+        from: senderAddress,
+        to: toAddress,
+        value: web3.utils.toHex(parseInt(web3.utils.toWei(money, 'ether'))),
+        gasPrice: web3.utils.toHex(web3.utils.toWei('2', 'gwei')),
+        gasLimit: web3.utils.toHex(21000),
+    };
+    web3.eth.transactionPollingTimeout = 30;
+    if(toAddress){
+        const signPromise = web3.eth.accounts.signTransaction(tx, privKey);
+        signPromise.then((signedTx) => {
+            const sentTx = web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+            console.log('Trying to send transaction...');
+            sentTx.on("receipt", receipt => {
+                console.log('Transaction sent successfully \n' + senderAddress + ' to ' + toAddress + '\nAmount: ' + money + ' ETH');
+                web3.eth.getBalance(toAddress)
+                    .then((balanceInWei) => {
+                        const balance = Web3.utils.fromWei(balanceInWei, 'ether');
+                        res.send({ balance: balance });
+                    });
+            });
+            sentTx.on("error", err => {
+                console.log(err)
+            });
+        }).catch((err) => {
+            console.log(err)
+        });
+    }
 });
