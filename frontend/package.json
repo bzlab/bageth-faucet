@@ -21,7 +21,6 @@
     "eject": "react-scripts eject",
     "watch": "npx tailwindcss -i tailwind.css -o ./src/index.css --watch"
   },
-  "proxy": "http://localhost:5000/",
   "browserslist": {
     "production": [
       ">0.2%",

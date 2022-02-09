@@ -3,6 +3,9 @@ import Web3 from 'web3';
 import bzlablogo from './img/bzlablogo.png';
 import { ethers } from 'ethers';
 
+// Import App config
+import config from './config'
+
 class App extends Component {
     constructor(props) {
         super(props);
@@ -17,6 +20,7 @@ class App extends Component {
     }
 
     click = async () => {
+
         if (typeof window.ethereum !== 'undefined') {
             console.log("Connecting to Metamask Account...")
             await window.ethereum.request({ method: 'eth_requestAccounts' })
@@ -35,7 +39,8 @@ class App extends Component {
         window.ethereum.request({ method: 'eth_getBalance', params: [address, 'latest'] })
             .then(balance => this.setState({ balance: ethers.utils.formatEther(balance) }))
     }
-    sendMoney = async () => {
+
+    sendEther = async () => {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const account = Web3.utils.toChecksumAddress(accounts[0]);
         const body = JSON.stringify({
@@ -50,7 +55,10 @@ class App extends Component {
             headers,
             body
         };
-        const response = await fetch('/send_ether', settings);
+
+        // TODO make request to name
+        const response = await fetch('/api/send_ether', settings);
+        console.log(response)
         const result = await response.json();
         if (response.status !== 200) {
             throw Error(body.message)
@@ -58,8 +66,6 @@ class App extends Component {
         this.checkBalance(account.toString());
         return result;
     }
-
-
 
     render() {
         if (typeof window.ethereum !== 'undefined') {
@@ -76,7 +82,7 @@ class App extends Component {
                         <hr />
                         {ethereum.selectedAddress ? (<span><b>Bakiye:</b> {this.state.balance} <i>ETH</i></span>) : null}
                         <hr />
-                        {ethereum.selectedAddress ? (<button className="bg-green-400 text-white font-semibold p-2 px-4 rounded-lg shadow-md hover:bg-green-500" onClick={this.sendMoney}>ETH Aktar!</button>) : null}
+                        {ethereum.selectedAddress ? (<button className="bg-green-400 text-white font-semibold p-2 px-4 rounded-lg shadow-md hover:bg-green-500" onClick={this.sendEther}>ETH Aktar!</button>) : null}
                     </div>
                 </div>
             </div>

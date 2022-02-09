@@ -1,17 +1,26 @@
 services:
-  frontend:
-    image: bageth-faucet-frontend
+
+  web:
+    build: "frontend"
+    networks:
+      - faucet
+
+  api:
+    build: "backend"
+    networks:
+      - faucet
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
     ports:
       - 80:80
+    depends_on:
+      - api
+      - web
     networks:
-      faucet:
-        ipv4_address: 192.168.40.1
-
-  backend:
-    image: bageth-faucet-frontend
-    networks:
-      faucet:
-        ipv4_address: 192.168.40.2
+      - faucet
 
 
 networks:
@@ -19,4 +28,4 @@ networks:
     driver: bridge             
     ipam:                      
       config:                  
-        - subnet: 192.168.40.0/24
+        - subnet: 192.168.42.0/24
