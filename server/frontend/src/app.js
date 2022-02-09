@@ -53,7 +53,7 @@ class App extends Component {
         };
 
         // TODO make request to name
-        const response = await fetch('/api/send_ether', settings);
+        const response = await fetch('/faucet/api/send_ether', settings);
         console.log(response)
         const result = await response.json();
         if (response.status !== 200) {

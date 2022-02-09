@@ -25,10 +25,10 @@ app.use(function(req, res, next) {
 });
 
 // TODO Serve public
-app.use(express.static(path.join(__dirname, "frontend", "build")));
-app.use(express.static("public"));
+app.use("/faucet", express.static(path.join(__dirname, "frontend", "build")));
+app.use("/faucet", express.static("public"));
 
-app.post('/api/send_ether', jsonParser, function (req, res) {
+app.post('/faucet/api/send_ether', jsonParser, function (req, res) {
     let web3 = new Web3(Web3.givenProvider || "https://eth.bag.org.tr/rpc");
     const toAddress = req.body.address;
 
