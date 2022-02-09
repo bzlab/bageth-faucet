@@ -3,9 +3,6 @@ import Web3 from 'web3';
 import bzlablogo from './img/bzlablogo.png';
 import { ethers } from 'ethers';
 
-// Import App config
-import config from './config'
-
 class App extends Component {
     constructor(props) {
         super(props);
@@ -20,7 +17,6 @@ class App extends Component {
     }
 
     click = async () => {
-
         if (typeof window.ethereum !== 'undefined') {
             console.log("Connecting to Metamask Account...")
             await window.ethereum.request({ method: 'eth_requestAccounts' })

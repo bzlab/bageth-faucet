@@ -1,27 +1,9 @@
 services:
 
   web:
-    build: "frontend"
+    build: "server"
     networks:
       - faucet
-
-  api:
-    build: "backend"
-    networks:
-      - faucet
-
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - 80:80
-    depends_on:
-      - api
-      - web
-    networks:
-      - faucet
-
 
 networks:
   faucet:                    

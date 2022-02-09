@@ -8,14 +8,13 @@ Bu projenin herhangi bir dependencies'i bulunmamaktadır.
 
 ## Proje Yapısı
 
-`/frontend` React Fronted  
-`/backend` Express Backend
+Express react native'in build ettigi public dosyalari `/` pathinde serve eder
 
 ## Projeyi Çalıştırma
 
 Aşağıdaki komutlarla projeyi çalıştırabilirsiniz.  
 
-React Fronted
+React Fronted Development mode
 
 ```sh
 $ cd frontend
@@ -26,7 +25,11 @@ $ npm start
 Express Backend
 
 ``` sh
-$ cd backend
 $ npm install
 $ node server.js
+```
+
+Docker container build etme
+```sh
+$ docker build -t bageth-faucet .
 ```

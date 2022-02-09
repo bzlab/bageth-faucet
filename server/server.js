@@ -1,4 +1,5 @@
 const express = require('express'); //Line 1
+const path = require("path");
 const app = express(); //Line 2
 const port = process.env.PORT || 5000; //Line 3
 
@@ -23,8 +24,11 @@ app.use(function(req, res, next) {
   next();
 });
 
+// TODO Serve public
+app.use(express.static(path.join(__dirname, "frontend", "build")));
+app.use(express.static("public"));
 
-app.post('/send_ether', jsonParser, function (req, res) {
+app.post('/api/send_ether', jsonParser, function (req, res) {
     let web3 = new Web3(Web3.givenProvider || "https://eth.bag.org.tr/rpc");
     const toAddress = req.body.address;
 
