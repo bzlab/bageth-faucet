@@ -21,7 +21,7 @@
     "eject": "react-scripts eject",
     "watch": "npx tailwindcss -i tailwind.css -o ./src/index.css --watch"
   },
-  "homepage": "http://eth.bag.org.tr/faucet/", 
+  "homepage": "http://eth.bag.org.tr/faucet/",
   "browserslist": {
     "production": [
       ">0.2%",

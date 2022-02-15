@@ -8,7 +8,11 @@ class App extends Component {
         super(props);
         this.state = {
             address: null,
-            balance: null
+            balance: null,
+            modal_success: false,
+            modal_pending: false,
+            modal_failed: false,
+            data: null
         };
     }
 
@@ -53,14 +57,27 @@ class App extends Component {
         };
 
         // TODO make request to name
-        const response = await fetch('/faucet/api/send_ether', settings);
-        console.log(response)
-        const result = await response.json();
-        if (response.status !== 200) {
+        this.setState({modal_pending : true});
+        const response = await fetch('/faucet/api/send_ether', settings)
+            .then(res => {this.setState({modal_pending: false, data: res})})
+        const res = this.state.data;
+        const balance = await res.json();
+        this.setState({balance: balance.balance});
+        if (res.status !== 200) {
             throw Error(body.message)
+            this.setState({modal_failed : true});
+
+            setTimeout(function() {
+                this.setState({modal_failed : false});
+            }.bind(this), 3000);
         }
-        this.checkBalance(account.toString());
-        return result;
+        if (res.status == 200) {
+            this.setState({modal_success : true});
+
+            setTimeout(function() {
+                this.setState({modal_success : false});
+            }.bind(this), 3000);
+        }
     }
 
     render() {
@@ -70,6 +87,9 @@ class App extends Component {
         return (
             <div className="flex flex-col h-screen gap-y-8 items-center">
                 <div className="bg-gray-600 w-full h-1/6 flex justify-center shadow-md"><img className="p-8" src={bzlablogo} /></div>
+                {this.state.modal_pending ? <div className="flex items-center justify-center bg-blue-400 w-1/3 p-4 text-white font-semibold shadow-md rounded-md"> Ethereum aktarma işlemi gerçekleştiriliyor...</div> : null}
+                {this.state.modal_failed ? <div className="flex items-center justify-center bg-red-400 w-1/3 p-4 text-white font-semibold shadow-md rounded-md"> Ethereum aktarımı sırasında sorun oluştu.</div> : null}
+                {this.state.modal_success ? <div className="flex items-center justify-center bg-green-400 w-1/3 p-4 text-white font-semibold shadow-md rounded-md"> Ethereum başarıyla hesabınıza aktarıldı. </div> : null}
                 <div className=" w-5/6 p-16 h-4/6 rounded-lg shadow-md bg-gray-200 flex flex-col text-lg">
                     {ethereum.selectedAddress ? <div className="flex justify-center text-center bg-gray-600 rounded-xl py-4 text-gray-100 shadow-md"><h2 className=""><b>BAGETH Havuzuna</b> Hoş Geldiniz! <br /> Aşağıdaki buton sayesinde hesabınıza <b>0.1 <i>ETH</i></b> gönderebilirsiniz. </h2></div> : (<div className="h-screen flex flex-col items-center justify-center gap-y-4"><span>Hoş Geldiniz! Aşağıdaki butonu kullanarak MetaMask Cüzdanınızı bağlayabilirsiniz.</span><button className="bg-orange-400 text-white font-semibold p-2 px-4 rounded-lg shadow-md hover:bg-orange-500" onClick={this.click}>MetaMask'a Bağlan</button></div>)}
                     <div className="flex flex-col h-full items-center justify-center gap-y-3">
