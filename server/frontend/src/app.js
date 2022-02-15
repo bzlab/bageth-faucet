@@ -60,7 +60,7 @@ class App extends Component {
 
         // TODO make request to name
         this.setState({modal_pending : true});
-        const response = await fetch('http://localhost:5000/faucet/api/send_ether', settings)
+        const response = await fetch('/faucet/api/send_ether', settings)
             .then(res => {this.setState({modal_pending: false, data: res})})
         const res = this.state.data;
         const balance = await res.json();
