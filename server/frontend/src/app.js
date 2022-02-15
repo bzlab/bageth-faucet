@@ -25,6 +25,35 @@ class App extends Component {
     click = async () => {
         if (typeof window.ethereum !== 'undefined') {
             console.log("Connecting to Metamask Account...")
+
+            // TODO refactor to function
+            // Source https://davidkathoh.medium.com/programatically-switch-network-on-metamask-e9a44525cab
+            const chainId = await window.ethereum.request({ method: `eth_chainId` });
+            const binanceTestChainId = '0x61'
+
+            if (chainId === binanceTestChainId) {
+                console.log("BAGETH network");
+            } else {
+                console.log("Different network")
+            }
+
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: "0x3039" }],
+                });
+                console.log("You have succefully switched to BAGETH network")
+            } catch (switchError) {
+                // This error code indicates that the chain has not been added to MetaMask.
+                console.log(switchError)
+
+                if (switchError.code === 4902) {
+                    console.log("This network is not available in your metamask, please add it")
+                    // TODO Kullaniciya hatayi bildir
+                }
+                console.log("Failed to switch to the network")
+            }
+
             await window.ethereum.request({ method: 'eth_requestAccounts' })
                 .then(res => { this.accountChangedHandler(res[0]) });
         } else {
@@ -59,25 +88,25 @@ class App extends Component {
         };
 
         // TODO make request to name
-        this.setState({modal_pending : true});
+        this.setState({ modal_pending: true });
         const response = await fetch('/faucet/api/send_ether', settings)
-            .then(res => {this.setState({modal_pending: false, data: res})})
+            .then(res => { this.setState({ modal_pending: false, data: res }) })
         const res = this.state.data;
         const balance = await res.json();
-        this.setState({balance: balance.balance});
+        this.setState({ balance: balance.balance });
         if (res.status !== 200) {
             throw Error(body.message)
-            this.setState({modal_failed : true});
+            this.setState({ modal_failed: true });
 
-            setTimeout(function() {
-                this.setState({modal_failed : false});
+            setTimeout(function () {
+                this.setState({ modal_failed: false });
             }.bind(this), 3000);
         }
         if (res.status == 200) {
-            this.setState({modal_success : true});
+            this.setState({ modal_success: true });
 
-            setTimeout(function() {
-                this.setState({modal_success : false});
+            setTimeout(function () {
+                this.setState({ modal_success: false });
             }.bind(this), 3000);
         }
     }
