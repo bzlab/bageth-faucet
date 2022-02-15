@@ -2,6 +2,8 @@ import React, { Component, useState } from 'react';
 import Web3 from 'web3';
 import bzlablogo from './img/bzlablogo.png';
 import { ethers } from 'ethers';
+import ReactLoading from 'react-loading';
+
 
 class App extends Component {
     constructor(props) {
@@ -58,7 +60,7 @@ class App extends Component {
 
         // TODO make request to name
         this.setState({modal_pending : true});
-        const response = await fetch('/faucet/api/send_ether', settings)
+        const response = await fetch('http://localhost:5000/faucet/api/send_ether', settings)
             .then(res => {this.setState({modal_pending: false, data: res})})
         const res = this.state.data;
         const balance = await res.json();
@@ -87,7 +89,8 @@ class App extends Component {
         return (
             <div className="flex flex-col h-screen gap-y-8 items-center">
                 <div className="bg-gray-600 w-full h-1/6 flex justify-center shadow-md"><img className="p-8" src={bzlablogo} /></div>
-                {this.state.modal_pending ? <div className="flex items-center justify-center bg-blue-400 w-1/3 p-4 text-white font-semibold shadow-md rounded-md"> Ethereum aktarma işlemi gerçekleştiriliyor...</div> : null}
+                {this.state.modal_pending ?
+                    <div className="flex justify-center gap-x-4 bg-blue-400 w-1/3 p-4 text-white font-semibold shadow-md rounded-md"><ReactLoading className="text-white text-center mt-1" type='spin' height='16px' width='16px' /><span>Ethereum aktarma işlemi gerçekleştiriliyor...</span></div> : null}
                 {this.state.modal_failed ? <div className="flex items-center justify-center bg-red-400 w-1/3 p-4 text-white font-semibold shadow-md rounded-md"> Ethereum aktarımı sırasında sorun oluştu.</div> : null}
                 {this.state.modal_success ? <div className="flex items-center justify-center bg-green-400 w-1/3 p-4 text-white font-semibold shadow-md rounded-md"> Ethereum başarıyla hesabınıza aktarıldı. </div> : null}
                 <div className=" w-5/6 p-16 h-4/6 rounded-lg shadow-md bg-gray-200 flex flex-col text-lg">
