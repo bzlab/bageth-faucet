@@ -14,7 +14,8 @@ class App extends Component {
             modal_success: false,
             modal_pending: false,
             modal_failed: false,
-            data: null
+            data: null,
+            deeplink: null
         };
     }
 
@@ -22,8 +23,19 @@ class App extends Component {
         this.click();
     }
 
+    isMobileDevice = () => {
+        return 'ontouchstart' in window || 'onmsgesturechange' in window;
+    }
+
+
     click = async () => {
-        if (typeof window.ethereum !== 'undefined') {
+
+        if (this.isMobileDevice()) {
+            const dappUrl = "24b4-88-245-196-59.ngrok.io"; // TODO enter your dapp URL. For example: https://uniswap.exchange. (don't enter the "https://")
+            const metamaskAppDeepLink = "https://metamask.app.link/dapp/" + dappUrl;
+            this.setState({deeplink: metamaskAppDeepLink});
+
+        }else if (typeof window.ethereum !== 'undefined') {
             console.log("Connecting to Metamask Account...")
 
             // TODO refactor to function
@@ -54,11 +66,15 @@ class App extends Component {
                 console.log("Failed to switch to the network")
             }
 
-            await window.ethereum.request({ method: 'eth_requestAccounts' })
-                .then(res => { this.accountChangedHandler(res[0]) });
+
+            this.setState({deeplink: null});
+
         } else {
             console.log("Install MetaMask Wallet");
+            this.setState({deeplink: null});
         }
+        await window.ethereum.request({ method: 'eth_requestAccounts' })
+            .then(res => { this.accountChangedHandler(res[0]) });
     }
 
     accountChangedHandler = async (newAccount) => {
@@ -89,7 +105,7 @@ class App extends Component {
 
         // TODO make request to name
         this.setState({ modal_pending: true });
-        const response = await fetch('/faucet/api/send_ether', settings)
+        const response = await fetch('http://localhost:5000/faucet/api/send_ether', settings)
             .then(res => { this.setState({ modal_pending: false, data: res }) })
         const res = this.state.data;
         const balance = await res.json();
@@ -112,25 +128,27 @@ class App extends Component {
     }
 
     render() {
-        if (typeof window.ethereum !== 'undefined') {
-            window.ethereum.on('accountsChanged', this.accountChangedHandler)
+        if (!this.isMobileDevice()) {
+            if (typeof window.ethereum !== 'undefined') {
+                window.ethereum.on('accountsChanged', this.accountChangedHandler)
+            }
         }
         return (
             <div className="flex flex-col h-screen gap-y-8 items-center">
-                <div className="bg-gray-600 w-full h-1/6 flex justify-center shadow-md"><img className="p-8" src={bzlablogo} /></div>
+                <div className="bg-gray-600 w-full h-1/6 flex justify-center shadow-md object-contain"><img className="p-10" src={bzlablogo} /></div>
                 {this.state.modal_pending ?
-                    <div className="flex justify-center gap-x-4 bg-blue-400 w-1/3 p-4 text-white font-semibold shadow-md rounded-md"><ReactLoading className="text-white text-center mt-1" type='spin' height='16px' width='16px' /><span>Ethereum aktarma işlemi gerçekleştiriliyor...</span></div> : null}
-                {this.state.modal_failed ? <div className="flex items-center justify-center bg-red-400 w-1/3 p-4 text-white font-semibold shadow-md rounded-md"> Ethereum aktarımı sırasında sorun oluştu.</div> : null}
-                {this.state.modal_success ? <div className="flex items-center justify-center bg-green-400 w-1/3 p-4 text-white font-semibold shadow-md rounded-md"> Ethereum başarıyla hesabınıza aktarıldı. </div> : null}
+                    <div className="flex items-center justify-center gap-x-4 bg-blue-400 w-3/4 md:w-1/3 text-xs md:text-base p-3 md:p-4 text-white font-semibold shadow-md rounded-md"><ReactLoading className="text-white text-center my-auto md:mt-1" type='spin' height='16px' width='16px' /><span>Ethereum aktarma işlemi başladı...</span></div> : null}
+                {this.state.modal_failed ? <div className="flex items-center justify-center bg-red-400 w-3/4 md:w-1/3 text-xs md:text-base p-3 md:p-4 text-white font-semibold shadow-md rounded-md"> Ethereum aktarımı sırasında sorun oluştu.</div> : null}
+                {this.state.modal_success ? <div className="flex items-center justify-center bg-green-400 w-3/4 md:w-1/3 text-xs md:text-base p-3 md:p-4 text-white font-semibold shadow-md rounded-md"> Ethereum başarıyla hesabınıza aktarıldı. </div> : null}
                 <div className=" w-5/6 p-16 h-4/6 rounded-lg shadow-md bg-gray-200 flex flex-col text-lg">
-                    {ethereum.selectedAddress ? <div className="flex justify-center text-center bg-gray-600 rounded-xl py-4 text-gray-100 shadow-md"><h2 className=""><b>BAGETH Havuzuna</b> Hoş Geldiniz! <br /> Aşağıdaki buton sayesinde hesabınıza <b>0.1 <i>ETH</i></b> gönderebilirsiniz. </h2></div> : (<div className="h-screen flex flex-col items-center justify-center gap-y-4"><span>Hoş Geldiniz! Aşağıdaki butonu kullanarak MetaMask Cüzdanınızı bağlayabilirsiniz.</span><button className="bg-orange-400 text-white font-semibold p-2 px-4 rounded-lg shadow-md hover:bg-orange-500" onClick={this.click}>MetaMask'a Bağlan</button></div>)}
-                    <div className="flex flex-col h-full items-center justify-center gap-y-3">
+                    {this.state.address ? <div className="flex justify-center text-center bg-gray-600 rounded-xl py-4 px-4 md:px-1 text-gray-100 shadow-md text-sm md:text-lg"><h2 className=""><b>BAGETH Havuzuna</b> Hoş Geldiniz! <br /> Aşağıdaki buton sayesinde hesabınıza <b>0.1 <i>ETH</i></b> gönderebilirsiniz. </h2></div> : (<div className="h-full flex flex-col justify-between items-center gap-y-4"><span className="flex font-semibold justify-center text-center bg-gray-600 rounded-xl py-4 px-8 text-gray-100 shadow-md text-sm md:text-lg">Hoş Geldiniz! Aşağıdaki butonu kullanarak MetaMask Cüzdanınızı bağlayabilirsiniz.</span><a href={this.isMobileDevice() ? this.state.deeplink : null}><button className="bg-orange-400 text-white font-semibold p-2 px-4 rounded-lg shadow-md hover:bg-orange-500" onClick={this.click}>MetaMask'a Bağlan</button></a></div>)}
+                    <div className="flex flex-col h-full items-center justify-center gap-y-3 text-[13px] md:text-lg">
                         <hr />
-                        {ethereum.selectedAddress ? (<span><b>Cüzdan Adresi:</b> {this.state.address}</span>) : null}
+                        {this.state.address ? (<span className="flex flex-col text-center"><b>Cüzdan Adresi:</b><span>{this.state.address}</span></span>) : null}
                         <hr />
-                        {ethereum.selectedAddress ? (<span><b>Bakiye:</b> {this.state.balance} <i>ETH</i></span>) : null}
+                        {this.state.address ? (<span><b>Bakiye:</b> <span>{this.state.balance} <i>ETH</i></span></span>) : null}
                         <hr />
-                        {ethereum.selectedAddress ? (<button className="bg-green-400 text-white font-semibold p-2 px-4 rounded-lg shadow-md hover:bg-green-500" onClick={this.sendEther}>ETH Aktar!</button>) : null}
+                        {this.state.address ? (<button className="bg-green-400 text-white font-semibold p-2 px-4 rounded-lg shadow-md hover:bg-green-500" onClick={this.sendEther}>ETH Aktar!</button>) : null}
                     </div>
                 </div>
             </div>
