@@ -1,13 +1,7 @@
 services:
 
-  web:
+  faucet:
     build: "server"
-    networks:
-      - faucet
+    ports:
+      - "5000:5000"
 
-networks:
-  faucet:                    
-    driver: bridge             
-    ipam:                      
-      config:                  
-        - subnet: 192.168.42.0/24
