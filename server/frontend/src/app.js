@@ -41,9 +41,9 @@ class App extends Component {
             // TODO refactor to function
             // Source https://davidkathoh.medium.com/programatically-switch-network-on-metamask-e9a44525cab
             const chainId = await window.ethereum.request({ method: `eth_chainId` });
-            const binanceTestChainId = '0x61'
+            const bagethChainId = '0x3039'
 
-            if (chainId === binanceTestChainId) {
+            if (chainId === bagethChainId) {
                 console.log("BAGETH network");
             } else {
                 console.log("Different network")
@@ -105,7 +105,7 @@ class App extends Component {
 
         // TODO make request to name
         this.setState({ modal_pending: true });
-        const response = await fetch('http://localhost:5000/faucet/api/send_ether', settings)
+        const response = await fetch('/api/send_ether', settings)
             .then(res => { this.setState({ modal_pending: false, data: res }) })
         const res = this.state.data;
         const balance = await res.json();
