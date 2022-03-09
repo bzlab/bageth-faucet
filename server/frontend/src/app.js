@@ -31,7 +31,7 @@ class App extends Component {
     click = async () => {
 
         if (this.isMobileDevice()) {
-            const dappUrl = "24b4-88-245-196-59.ngrok.io"; // TODO enter your dapp URL. For example: https://uniswap.exchange. (don't enter the "https://")
+            const dappUrl = "faucet.eth.bag.org.tr"; // TODO enter your dapp URL. For example: https://uniswap.exchange. (don't enter the "https://")
             const metamaskAppDeepLink = "https://metamask.app.link/dapp/" + dappUrl;
             this.setState({deeplink: metamaskAppDeepLink});
 
