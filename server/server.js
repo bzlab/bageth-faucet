@@ -3,6 +3,7 @@ const path = require("path");
 const Web3 = require('web3');
 const morgan = require('morgan')
 const jsonParser = require('body-parser').json()
+require('dotenv').config({path: __dirname + '/frontend/.env'})
 
 // Express
 const app = express();
@@ -10,12 +11,12 @@ app.use(morgan('combined'))
 const port = process.env.PORT || 5000;
 
 // Ethereum, Web3.js 
-const ethAmount = '0.1';
-const senderAddress = '0x15C2c14B416b2f5531CbCcdE364c048cf3F0f1dE';
-const privKey = '358547c8efd5381ad50841d73d5449d64a0c9f795070f8c54c34cbdf4c94969d';
+const ethAmount = process.env.ETH_AMOUNT;
+const senderAddress = process.env.SENDER;
+const privKey = process.env.PRIVATE_KEY;
 
 // const web3 = new Web3(Web3.givenProvider || "https://rpc.eth.bag.org.tr" || "http://localhost:3000");
-const web3 = new Web3(Web3.givenProvider || "https://rpc.eth.bag.org.tr");
+const web3 = new Web3(Web3.givenProvider || process.env.RPC_URL);
 web3.eth.transactionPollingTimeout = 30;
 
 // This displays message that the server running and listening to specified port

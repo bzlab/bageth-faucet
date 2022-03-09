@@ -31,17 +31,16 @@ class App extends Component {
     click = async () => {
 
         if (this.isMobileDevice()) {
-            const dappUrl = "faucet.eth.bag.org.tr"; // TODO enter your dapp URL. For example: https://uniswap.exchange. (don't enter the "https://")
+            const dappUrl = process.env.REACT_APP_DAPP_URL; // TODO enter your dapp URL. For example: https://uniswap.exchange. (don't enter the "https://")
             const metamaskAppDeepLink = "https://metamask.app.link/dapp/" + dappUrl;
             this.setState({deeplink: metamaskAppDeepLink});
 
         }else if (typeof window.ethereum !== 'undefined') {
             console.log("Connecting to Metamask Account...")
-
             // TODO refactor to function
             // Source https://davidkathoh.medium.com/programatically-switch-network-on-metamask-e9a44525cab
             const chainId = await window.ethereum.request({ method: `eth_chainId` });
-            const bagethChainId = '0x3039'
+            const bagethChainId = process.env.REACT_APP_CHAIN_ID
 
             if (chainId === bagethChainId) {
                 console.log("BAGETH network");
@@ -52,7 +51,7 @@ class App extends Component {
             try {
                 await window.ethereum.request({
                     method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: "0x3039" }],
+                    params: [{ chainId: process.env.REACT_APP_CHAIN_ID }],
                 });
                 console.log("You have succefully switched to BAGETH network")
             } catch (switchError) {
